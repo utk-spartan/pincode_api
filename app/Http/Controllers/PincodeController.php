@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: utkarshsaxena
- * Date: 29/06/18
- * Time: 13:03
- */
 
 namespace App\Http\Controllers;
 
@@ -26,16 +20,18 @@ class PincodeController
     {
         $validator = Validator::make(array($pin), [$pin => 'bail | integer | between:99999,1000000']);
 
-        if ($validator->fails())
+        if ($validator->fails() === true)
         {
             return response()->json("Invalid Pincode", 404);
         }
 
         $pincodes = new Pincode();
         $res      = $pincodes->findPin($pin);
-        if ($res === null | $res->isNotEmpty())
+        if ($res === null || $res->isNotEmpty())
         {
-            return response()->json($res->groupBy(config('database.tables.pincode.pincode')), 200);
+            $res = $res->groupBy(config('database.tables.pincode.pincode'));
+
+            return response()->json($res, 200);
         }
         else
         {
@@ -54,16 +50,17 @@ class PincodeController
     {
 
         $validator = Validator::make($request->all(), [
-            'city'  => 'nullable|alpha|max:30',
-            'state' => 'required|alpha|max:30',
+            'city'  => 'nullable|alpha',
+            'state' => 'required|alpha',
         ]);
 
-        if ($validator->fails())
+        if ($validator->fails() === true)
         {
             return response()->json($validator->getMessageBag(), 404);
         }
 
         $res = $this->getPinFromAddress($request->query('city'), $request->query('state'));
+
         if ($res !== null)
         {
             return response()->json($res->groupBy(
@@ -73,7 +70,7 @@ class PincodeController
         }
         else
         {
-            return response()->json("Not found", 404);
+            return response()->json(config('responses.pincode.notFound'), 404);
         }
     }
 
@@ -91,21 +88,26 @@ class PincodeController
         $state = new State();
         $state = $state->where(config('database.tables.state.name'), 'LIKE', '%' . $stName . '%')
                        ->first();
+
         if ($state === null)
         {
             return null;
         }
+
         $state = $state->pincodes();
+
         if ($city !== null)
         {
             $state = $state->where(config('database.tables.pincode.city'), 'LIKE', '%' . $city . '%');
         }
 
         $res = $state->get();
-        if ($res->isEmpty())
+
+        if ($res->isEmpty() === true)
         {
             return null;
         }
+
         else
         {
             return $res;

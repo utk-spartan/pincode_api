@@ -17,7 +17,6 @@ class CreatePincodeStateTables extends Migration
             $table->string('name');
             $table->char('code', 2);
             $table->integer('tin')->unique();
-
             $table->timestamps();
         });
 

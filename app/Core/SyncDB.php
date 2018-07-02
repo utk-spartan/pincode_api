@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: utkarshsaxena
- * Date: 29/06/18
- * Time: 12:39
- */
 
 namespace App\Core;
 
@@ -18,15 +12,14 @@ class SyncDB
      * Synchronize the local Database with data from data.gov.in
      *
      */
+    // TODO: split into smaller functions
     public function syncLocalDB()
     {
-        $url    = config('services.datagovin.uri')
-                  . "&format=json&offset=";
         $client = new \GuzzleHttp\Client(['http_errors' => false]);
-        $res    = $client->get($url . '0' . "&limit=1");
+        $res    = $client->get(config('services.datagovin.uriForTotal'));
         if ($res->getStatusCode() != 200)
         {
-            echo "Error connecting external api or invalid respponse";
+            echo config('responses.syncDB.externalAPIInaccessible');
 
             return;
         }
@@ -36,7 +29,7 @@ class SyncDB
 
         for ($off = 0; $off <= $tot; $off += 1000)
         {
-            $res  = $client->get($url . $off . "&limit=1000");
+            $res  = $client->get(config('services.datagovin.uri') . $off);
             $json = json_decode($res->getBody(), true);
             if ($res->getStatusCode() == 200)
             {

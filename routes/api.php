@@ -20,8 +20,8 @@ Route::middleware('auth:api')->get('/user', function(Request $request) {
 Route::get('/info', 'PincodeController@searchAddress');
 Route::get('/{pin}', 'PincodeController@searchPin')->where('pin', '[0-9]+');
 Route::get('/{_}', function() {
-    return response()->json("Invalid pincode", 404);
+    return response()->json(config('responses.pincode.invalid'), 404);
 });
 Route::get('/', function() {
-    return response()->json("Invalid pincode", 404);
+    return response()->json(config('responses.pincode.invalid'), 404);
 });
