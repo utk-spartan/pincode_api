@@ -54,13 +54,13 @@ class PincodeController
     {
 
         $validator = Validator::make($request->all(), [
-            'city'  => 'nullable|max:30',
-            'state' => 'required|max:30',
+            'city'  => 'nullable|alpha|max:30',
+            'state' => 'required|alpha|max:30',
         ]);
 
         if ($validator->fails())
         {
-            return $validator->getMessageBag();
+            return response()->json($validator->getMessageBag(), 404);
         }
 
         $res = $this->getPinFromAddress($request->query('city'), $request->query('state'));
