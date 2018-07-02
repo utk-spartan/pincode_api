@@ -6,7 +6,7 @@
  * Time: 12:39
  */
 
-namespace App;
+namespace App\Core;
 
 use App\Models\Pincode;
 use App\Models\State;
@@ -14,17 +14,19 @@ use App\Models\State;
 class SyncDB
 {
 
+    /**
+     * Synchronize the local Database with data from data.gov.in
+     *
+     */
     public function syncLocalDB()
     {
-        echo $url = config('services.datagovin.uri')
-                    . "&format=json&offset=";
+        $url    = config('services.datagovin.uri')
+                  . "&format=json&offset=";
         $client = new \GuzzleHttp\Client(['http_errors' => false]);
         $tot    = json_decode($client->get($url . '0' . "&limit=1")->getBody(), true)['total'];
 
-
         for ($off = 0; $off <= $tot; $off += 1000)
         {
-            //$res = $client->get('https://pincode.saratchandra.in/api/pincode/'.$pin);
             $res  = $client->get($url . $off . "&limit=1000");
             $json = json_decode($res->getBody(), true);
             if ($res->getStatusCode() == 200)
@@ -48,6 +50,12 @@ class SyncDB
 
     }
 
+
+    /**
+     * Add data from input array to pincode table
+     *
+     * @param $data
+     */
     protected function addToPincodeTable($data)
     {
         $pincode = new Pincode();

@@ -11,6 +11,11 @@ class State extends Model
 
     protected $guarded = [];
 
+    /**
+     * DB table relationship
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function pincodes()
     {
         return $this->hasMany('App\Models\Pincode', 'statetin', 'tin');
