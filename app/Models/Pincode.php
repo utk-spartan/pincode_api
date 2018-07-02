@@ -23,7 +23,7 @@ class Pincode extends Model
      */
     function findPin($pin)
     {
-        $pincode = $this->where('pincode', $pin)
+        $pincode = $this->where(config('database.tables.pincode.pincode'), $pin)
                         ->get()
                         ->unique();
 
@@ -33,7 +33,7 @@ class Pincode extends Model
         {
 
             $res->add(
-                collect($item)->except('statetin')
+                collect($item)->except(config('database.tables.pincode.statetin'))
                               ->put(
                                   "state",
                                   ($item->state())->first()->stateName()
@@ -55,6 +55,6 @@ class Pincode extends Model
      */
     public function state()
     {
-        return $this->belongsTo('App\Models\State', 'statetin', 'tin');
+        return $this->belongsTo('App\Models\State', config('database.tables.pincode.statetin'), config('database.tables.state.tin'));
     }
 }

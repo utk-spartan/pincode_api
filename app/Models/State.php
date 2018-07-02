@@ -18,7 +18,10 @@ class State extends Model
      */
     public function pincodes()
     {
-        return $this->hasMany('App\Models\Pincode', 'statetin', 'tin');
+        return $this->hasMany('App\Models\Pincode',
+                              config('database.tables.pincode.statetin'),
+                              config('database.tables.state.tin')
+        );
     }
 
     /**
@@ -28,7 +31,7 @@ class State extends Model
      */
     public function stateName()
     {
-        return $this->getAttribute('name');
+        return $this->getAttribute(config('database.tables.state.name'));
     }
 
     /**
@@ -38,6 +41,6 @@ class State extends Model
      */
     public function stateCode()
     {
-        return $this->getAttribute('code');
+        return $this->getAttribute(config('database.tables.state.code'));
     }
 }

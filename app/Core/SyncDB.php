@@ -27,6 +27,7 @@ class SyncDB
         if ($res->getStatusCode() != 200)
         {
             echo "Error connecting external api or invalid respponse";
+
             return;
         }
 
@@ -45,9 +46,9 @@ class SyncDB
                     $data = array(
                         $data['pincode'],
                         $data['taluk'],
-                        ((new State())->where('name', $data['statename'])
+                        ((new State())->where(config('database.tables.state.name'), $data['statename'])
                                       ->first()
-                                      ->getAttribute('tin')),
+                                      ->getAttribute(config('database.tables.state.tin'))),
                         $data['districtname']
                     );
                     $this->addToPincodeTable($data);
@@ -67,10 +68,10 @@ class SyncDB
     protected function addToPincodeTable($data)
     {
         $pincode = new Pincode();
-        $pincode->fill(['pincode'  => $data[0],
-                        'city'     => $data[1],
-                        'statetin' => $data[2],
-                        'district' => $data[3],
+        $pincode->fill([config('database.tables.pincode.pincode')  => $data[0],
+                        config('database.tables.pincode.city')     => $data[1],
+                        config('database.tables.pincode.statetin') => $data[2],
+                        config('database.tables.pincode.district') => $data[3],
                        ]);
         $pincode->save();
     }

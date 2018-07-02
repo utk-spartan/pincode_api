@@ -35,7 +35,7 @@ class PincodeController
         $res      = $pincodes->findPin($pin);
         if ($res === null | $res->isNotEmpty())
         {
-            return response()->json($res->groupBy('pincode'), 200);
+            return response()->json($res->groupBy(config('database.tables.pincode.pincode')), 200);
         }
         else
         {
@@ -66,7 +66,10 @@ class PincodeController
         $res = $this->getPinFromAddress($request->query('city'), $request->query('state'));
         if ($res !== null)
         {
-            return response()->json($res->groupBy('pincode'), 200);
+            return response()->json($res->groupBy(
+                config('database.tables.pincode.pincode')),
+                                    200
+            );
         }
         else
         {
@@ -86,7 +89,7 @@ class PincodeController
     public function getPinFromAddress($city, $stName)
     {
         $state = new State();
-        $state = $state->where('name', 'LIKE', '%' . $stName . '%')
+        $state = $state->where(config('database.tables.state.name'), 'LIKE', '%' . $stName . '%')
                        ->first();
         if ($state === null)
         {
@@ -95,7 +98,7 @@ class PincodeController
         $state = $state->pincodes();
         if ($city !== null)
         {
-            $state = $state->where('city', 'LIKE', '%' . $city . '%');
+            $state = $state->where(config('database.tables.pincode.city'), 'LIKE', '%' . $city . '%');
         }
 
         $res = $state->get();

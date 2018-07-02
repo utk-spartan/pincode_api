@@ -117,13 +117,19 @@ return [
 
     ],
 
-    /*'tables' => [
+    'tables' => [
         'pincode' => [
+            'city'     => 'city',
+            'district' => 'district',
+            'statetin' => 'statetin',
+            'pincode'  => 'pincode'
 
         ],
-        'state' => [
-
+        'state'   => [
+            'name' => 'name',
+            'code' => 'code',
+            'tin'  => 'tin'
         ]
-    ],*/
+    ],
 
 ];

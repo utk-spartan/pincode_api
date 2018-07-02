@@ -18,7 +18,8 @@ class ExampleTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testPincodeSearch(){
+    public function testPincodeSearch()
+    {
         $response = $this->get('/api/324005');
         $response->assertOk()
                  ->assertJsonFragment(['city' => 'Kota']);
