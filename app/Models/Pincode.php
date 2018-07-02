@@ -36,7 +36,11 @@ class Pincode extends Model
                 collect($item)->except('statetin')
                               ->put(
                                   "state",
-                                  $this->stateName($item->state())
+                                  ($item->state())->first()->stateName()
+                              )
+                              ->put(
+                                  "stateCode",
+                                  ($item->state())->first()->stateCode()
                               )
             );
         }
@@ -53,19 +57,4 @@ class Pincode extends Model
     {
         return $this->belongsTo('App\Models\State', 'statetin', 'tin');
     }
-
-    /**
-     * Get state name from the state table using the state tin number
-     *
-     * @param $state
-     *
-     * @return mixed
-     */
-    public function stateName($state)
-    {
-        return $state->first()
-                     ->getAttribute('name');
-    }
-
-
 }

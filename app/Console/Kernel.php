@@ -26,7 +26,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function() {(new SyncDB())->syncLocalDB();})
+        $schedule->call(function() {
+            (new SyncDB())->syncLocalDB();
+        })
                  ->weekly();
     }
 

@@ -23,7 +23,16 @@ class SyncDB
         $url    = config('services.datagovin.uri')
                   . "&format=json&offset=";
         $client = new \GuzzleHttp\Client(['http_errors' => false]);
-        $tot    = json_decode($client->get($url . '0' . "&limit=1")->getBody(), true)['total'];
+        $res    = $client->get($url . '0' . "&limit=1");
+        if ($res->getStatusCode() != 200)
+        {
+            echo "Error connecting external api or invalid respponse";
+
+            return;
+        }
+
+        $this->prepareDatabase();
+        $tot = json_decode($res->getBody(), true)['total'];
 
         for ($off = 0; $off <= $tot; $off += 1000)
         {
@@ -65,5 +74,14 @@ class SyncDB
                         'district' => $data[3],
                        ]);
         $pincode->save();
+    }
+
+    /**
+     * Prepare database for synchronization by purging the pincode table
+     */
+    protected function prepareDatabase()
+    {
+        $table = new Pincode();
+        $table->newModelQuery()->delete();
     }
 }

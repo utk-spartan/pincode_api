@@ -24,9 +24,23 @@ class PincodeController
      */
     public function searchPin($pin)
     {
-        $pincodes = new Pincode();
+        $validator = Validator::make(array($pin), [$pin => 'bail | integer | between:99999,1000000']);
 
-        return response()->json($pincodes->findPin($pin));
+        if ($validator->fails())
+        {
+            return response()->json("Invalid Pincode", 404);
+        }
+
+        $pincodes = new Pincode();
+        $res      = $pincodes->findPin($pin);
+        if ($res === null | $res->isNotEmpty())
+        {
+            return response()->json($res->groupBy('pincode'), 200);
+        }
+        else
+        {
+            return response()->json("Pincode not found", 404);
+        }
     }
 
     /**
@@ -40,15 +54,24 @@ class PincodeController
     {
 
         $validator = Validator::make($request->all(), [
-            'city' => 'nullable|max:30',
+            'city'  => 'nullable|max:30',
             'state' => 'required|max:30',
         ]);
 
-        if ($validator->fails()) {
+        if ($validator->fails())
+        {
             return $validator->getMessageBag();
         }
 
-        return $this->getPinFromAddress($request->query('city'), $request->query('state'));
+        $res = $this->getPinFromAddress($request->query('city'), $request->query('state'));
+        if ($res !== null)
+        {
+            return response()->json($res->groupBy('pincode'), 200);
+        }
+        else
+        {
+            return response()->json("Not found", 404);
+        }
     }
 
     /**
@@ -63,14 +86,20 @@ class PincodeController
     public function getPinFromAddress($city, $stName)
     {
         $state = new State();
-        $state = $state->where('name', $stName)
-                       ->first()
-                       ->pincodes();
+        $state = $state->where('name', 'LIKE', '%' . $stName . '%')
+                       ->first();
+        if ($state === null)
+        {
+            return null;
+        }
+        $state = $state->pincodes();
         if ($city !== null)
         {
             $state = $state->where('city', $city);
         }
 
-        return $state->get();
+        $res = $state->get();
+        if($res->isEmpty())return NULL;
+        else return $res;
     }
 }
