@@ -27,7 +27,6 @@ class SyncDB
         if ($res->getStatusCode() != 200)
         {
             echo "Error connecting external api or invalid respponse";
-
             return;
         }
 
