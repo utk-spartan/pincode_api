@@ -95,11 +95,17 @@ class PincodeController
         $state = $state->pincodes();
         if ($city !== null)
         {
-            $state = $state->where('city', $city);
+            $state = $state->where('city', 'LIKE', '%' . $city . '%');
         }
 
         $res = $state->get();
-        if($res->isEmpty())return NULL;
-        else return $res;
+        if ($res->isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            return $res;
+        }
     }
 }
